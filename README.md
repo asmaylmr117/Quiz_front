@@ -39,7 +39,7 @@ A full-stack quiz application built with React + Vite frontend and Node.js + Exp
 - Tailwind CSS for styling
 - Lucide React for icons
 - React Hot Toast for notifications
-- Axios for API calls
+- fetch for API calls
 
 
 ### Frontend Setup
