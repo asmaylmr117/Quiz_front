@@ -11,11 +11,9 @@ import {
   Trash2,
   UserX,
   Award,
-  XCircle,
-  CheckCircle,
-  X,
-  CircleCheck,
-  CircleX
+  XCircle,        
+  CheckCircle,    
+  X
 } from 'lucide-react';
 import { Toaster, toast } from 'react-hot-toast';
 
