@@ -1,64 +1,122 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  User, 
-  Play, 
-  LogOut, 
+import {
+  User,
+  Settings,
+  HelpCircle,
+  Users,
+  BarChart3,
+  LogOut,
+  Plus,
   Edit,
   Trash2,
-  ArrowLeft,
-  ArrowRight,
+  UserX,
   Award,
-  Trophy,
-  Star,
-  Sparkles
+  XCircle,        
+  CheckCircle,   
+  X
 } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import { Toaster, toast } from 'react-hot-toast';
 
 const API_BASE_URL = 'https://quiz-backend-rose.vercel.app';
 
+const ConfirmationModal = ({ isOpen, onConfirm, onCancel, message }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm transition-opacity duration-300">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-2xl transform transition-transform duration-300 scale-100 w-11/12 md:w-1/3">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white">Confirm Action</h3>
+          <button onClick={onCancel} className="text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+            <X size={24} />
+          </button>
+        </div>
+        <p className="text-gray-700 dark:text-gray-300 mb-6">{message}</p>
+        <div className="flex justify-end gap-4">
+          <button
+            onClick={onCancel}
+            className="px-6 py-2 rounded-xl text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={onConfirm}
+            className="px-6 py-2 rounded-xl bg-red-600 text-white hover:bg-red-700 transition-colors"
+          >
+            Confirm
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const StudentDashboard = () => {
   const [activeTab, setActiveTab] = useState('profile');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalAction, setModalAction] = useState(() => {});
 
-  // Auth context access
+  const handleOpenModal = (message, action) => {
+    setModalMessage(message);
+    setModalAction(() => action);
+    setIsModalOpen(true);
+  };
+
+  const handleConfirm = () => {
+    setIsModalOpen(false);
+    modalAction();
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     window.location.reload();
   };
 
+  const navItems = [
+    { name: 'Profile', icon: User, tab: 'profile', color: 'bg-blue-600' },
+    { name: 'Start Quiz', icon: Play, tab: 'quiz', color: 'bg-green-600' },
+  ];
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return <ProfileContent handleOpenModal={handleOpenModal} />;
+      case 'quiz':
+        return <QuizContent />;
+      default:
+        return <ProfileContent handleOpenModal={handleOpenModal} />;
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 to-purple-900 font-sans">
+      <Toaster />
       {/* Header */}
       <header className="bg-white bg-opacity-10 backdrop-blur-lg shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <h1 className="text-2xl font-bold text-white">Student Dashboard</h1>
-            <div className="flex space-x-4">
+          <div className="flex flex-col sm:flex-row justify-between items-center py-4 sm:py-0 h-auto sm:h-16">
+            <h1 className="text-2xl font-bold text-white mb-4 sm:mb-0">Student Dashboard</h1>
+            <div className="flex overflow-x-auto gap-4 py-2 sm:py-0 w-full sm:w-auto">
+              {navItems.map(item => (
+                <button
+                  key={item.tab}
+                  onClick={() => setActiveTab(item.tab)}
+                  className={`flex-shrink-0 flex items-center space-x-2 px-4 py-2 rounded-lg text-white transition-all duration-300
+                    ${activeTab === item.tab ? `${item.color} bg-opacity-80` : 'bg-white bg-opacity-20 hover:bg-opacity-30'}`}
+                >
+                  <item.icon size={20} />
+                  <span>{item.name}</span>
+                </button>
+              ))}
               <button
-                onClick={() => setActiveTab('profile')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-white transition-all duration-300 ${
-                  activeTab === 'profile' 
-                    ? 'bg-blue-600 bg-opacity-80' 
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
-                }`}
-              >
-                <User size={20} />
-                <span>Profile</span>
-              </button>
-              <button
-                onClick={() => setActiveTab('quiz')}
-                className={`flex items-center space-x-2 px-4 py-2 rounded-lg text-white transition-all duration-300 ${
-                  activeTab === 'quiz' 
-                    ? 'bg-green-600 bg-opacity-80' 
-                    : 'bg-white bg-opacity-20 hover:bg-opacity-30'
-                }`}
-              >
-                <Play size={20} />
-                <span>Start Quiz</span>
-              </button>
-              <button
-                onClick={logout}
-                className="flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition-all duration-300"
+                onClick={() => handleOpenModal('Are you sure you want to log out?', logout)}
+                className="flex-shrink-0 flex items-center space-x-2 px-4 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white transition-all duration-300"
               >
                 <LogOut size={20} />
                 <span>Logout</span>
@@ -70,14 +128,20 @@ const StudentDashboard = () => {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {activeTab === 'profile' && <ProfileContent />}
-        {activeTab === 'quiz' && <QuizContent />}
+        {renderContent()}
       </main>
+
+      <ConfirmationModal
+        isOpen={isModalOpen}
+        onConfirm={handleConfirm}
+        onCancel={handleCancel}
+        message={modalMessage}
+      />
     </div>
   );
 };
 
-const ProfileContent = () => {
+const ProfileContent = ({ handleOpenModal }) => {
   const [user, setUser] = useState(JSON.parse(localStorage.getItem('user') || '{}'));
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -119,31 +183,29 @@ const ProfileContent = () => {
   };
 
   const handleDeleteAccount = async () => {
-    if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      try {
-        const response = await fetch(`${API_BASE_URL}/users/profile`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
-        });
-
-        if (response.ok) {
-          toast.success('Account deleted successfully');
-          localStorage.clear();
-          window.location.reload();
-        } else {
-          toast.error('Failed to delete account');
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/profile`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
-      } catch (error) {
-        toast.error('Network error');
+      });
+
+      if (response.ok) {
+        toast.success('Account deleted successfully');
+        localStorage.clear();
+        window.location.reload();
+      } else {
+        toast.error('Failed to delete account');
       }
+    } catch (error) {
+      toast.error('Network error');
     }
   };
 
   return (
-    <div className="px-4 py-6 sm:px-0">
-      <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-6 max-w-2xl mx-auto">
+    <div className="p-4 sm:p-0">
+      <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-6 max-w-2xl mx-auto shadow-lg">
         <h2 className="text-2xl font-bold text-white mb-6">Profile Settings</h2>
         
         {editMode ? (
@@ -170,50 +232,48 @@ const ProfileContent = () => {
                 required
               />
             </div>
-            <div className="flex space-x-4">
+            <div className="flex flex-wrap gap-4 pt-2">
               <button
                 type="submit"
-                className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
               >
-                Save Changes
+                <CircleCheck size={20} /> Save Changes
               </button>
               <button
                 type="button"
                 onClick={() => setEditMode(false)}
-                className="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
+                className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
               >
-                Cancel
+                <CircleX size={20} /> Cancel
               </button>
             </div>
           </form>
         ) : (
           <div className="space-y-4">
-            <div>
+            <div className="border-b border-gray-700 pb-4">
               <label className="block text-gray-200 text-sm font-medium mb-2">Name</label>
               <p className="text-white text-lg">{user.name}</p>
             </div>
-            <div>
+            <div className="border-b border-gray-700 pb-4">
               <label className="block text-gray-200 text-sm font-medium mb-2">Email</label>
               <p className="text-white text-lg">{user.email}</p>
             </div>
-            <div>
+            <div className="pb-4">
               <label className="block text-gray-200 text-sm font-medium mb-2">Role</label>
               <p className="text-white text-lg capitalize">{user.role}</p>
             </div>
-            <div className="flex space-x-4 pt-4">
+            <div className="flex flex-wrap gap-4 pt-4">
               <button
                 onClick={() => setEditMode(true)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300 flex items-center space-x-2"
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
               >
-                <Edit size={18} />
-                <span>Edit Profile</span>
+                <Edit size={18} /> Edit Profile
               </button>
               <button
-                onClick={handleDeleteAccount}
-                className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors duration-300 flex items-center space-x-2"
+                onClick={() => handleOpenModal('Are you sure you want to delete your account? This action cannot be undone.', handleDeleteAccount)}
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
               >
-                <Trash2 size={18} />
-                <span>Delete Account</span>
+                <Trash2 size={18} /> Delete Account
               </button>
             </div>
           </div>
@@ -233,6 +293,7 @@ const QuizContent = () => {
   const [loading, setLoading] = useState(false);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [showCelebration, setShowCelebration] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     fetchQuestions();
@@ -241,20 +302,33 @@ const QuizContent = () => {
   const fetchQuestions = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/questions`);
-      const data = await response.json();
       if (response.ok) {
-        setQuestions(data);
-        setAnswers(new Array(data.length).fill(''));
+        const data = await response.json();
+        if (data.length > 0) {
+          setQuestions(data);
+          setAnswers(new Array(data.length).fill(''));
+        } else {
+          setQuestions([]);
+          toast.error('No questions available yet. Please try again later.');
+        }
+      } else {
+        toast.error('Failed to load questions.');
       }
     } catch (error) {
       console.error('Error fetching questions:', error);
-      toast.error('Failed to load questions');
+      toast.error('Network error while loading questions.');
     }
+  };
+  
+  const refreshQuestions = async () => {
+    setIsRefreshing(true);
+    await fetchQuestions();
+    setIsRefreshing(false);
   };
 
   const startQuiz = () => {
     if (questions.length === 0) {
-      toast.error('No questions available');
+      toast.error('No questions available. Please try refreshing.');
       return;
     }
     setQuizStarted(true);
@@ -313,8 +387,10 @@ const QuizContent = () => {
     setScore(finalScore);
     setQuizCompleted(true);
 
-    // Check if score is 50% or more for celebration
-    if (finalScore >= questions.length / 2) {
+    const percentage = Math.round((finalScore / questions.length) * 100);
+    const passed = percentage >= 50;
+
+    if (passed) {
       setShowCelebration(true);
       setTimeout(() => setShowCelebration(false), 5000);
     }
@@ -338,6 +414,7 @@ const QuizContent = () => {
       }
     } catch (error) {
       console.error('Error saving result:', error);
+      toast.error('Network error while saving result');
     }
 
     setLoading(false);
@@ -353,13 +430,20 @@ const QuizContent = () => {
     setShowCelebration(false);
   };
 
-  if (questions.length === 0) {
+  if (questions.length === 0 && !isRefreshing) {
     return (
-      <div className="px-4 py-6 sm:px-0">
-        <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 text-center">
+      <div className="p-4 sm:p-0">
+        <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 text-center max-w-2xl mx-auto">
           <Play className="mx-auto h-16 w-16 text-gray-400 mb-4" />
           <h2 className="text-2xl font-bold text-white mb-4">No Questions Available</h2>
-          <p className="text-gray-300">Please wait while the administrator adds questions to the quiz.</p>
+          <p className="text-gray-300 mb-6">The administrator has not yet added any questions. Please check back later.</p>
+          <button
+            onClick={refreshQuestions}
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 flex items-center justify-center space-x-2 mx-auto"
+          >
+            <RefreshCcw size={20} />
+            <span>Refresh</span>
+          </button>
         </div>
       </div>
     );
@@ -367,8 +451,8 @@ const QuizContent = () => {
 
   if (!quizStarted) {
     return (
-      <div className="px-4 py-6 sm:px-0">
-        <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 text-center max-w-2xl mx-auto">
+      <div className="p-4 sm:p-0">
+        <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 text-center max-w-2xl mx-auto shadow-lg">
           <Play className="mx-auto h-16 w-16 text-blue-400 mb-4" />
           <h2 className="text-3xl font-bold text-white mb-4">Ready to Start Quiz?</h2>
           <p className="text-gray-300 mb-2">Total Questions: {questions.length}</p>
@@ -387,11 +471,10 @@ const QuizContent = () => {
 
   if (quizCompleted) {
     const percentage = Math.round((score / questions.length) * 100);
-    const passed = percentage >= 50; // تغيير من 60% إلى 50%
+    const passed = percentage >= 50;
 
     return (
-      <div className="px-4 py-6 sm:px-0 relative">
-        {/* Celebration Animation */}
+      <div className="p-4 sm:p-0 relative">
         {showCelebration && (
           <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
             <div className="confetti-container">
@@ -412,7 +495,7 @@ const QuizContent = () => {
           </div>
         )}
 
-        <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 text-center max-w-2xl mx-auto">
+        <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 text-center max-w-2xl mx-auto shadow-lg">
           {passed ? (
             <div className="mb-6">
               <Trophy className="mx-auto h-16 w-16 text-yellow-400 mb-4 animate-bounce" />
@@ -448,12 +531,20 @@ const QuizContent = () => {
             </div>
           </div>
 
-          <div className="flex space-x-4 justify-center">
+          <div className="flex flex-wrap gap-4 justify-center">
             <button
               onClick={resetQuiz}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
+              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
             >
-              Take Quiz Again
+              <RefreshCcw size={20} />
+              <span>Take Quiz Again</span>
+            </button>
+            <button
+              onClick={() => window.location.reload()}
+              className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105"
+            >
+              <Home size={20} />
+              <span>Back to Home</span>
             </button>
           </div>
         </div>
@@ -489,8 +580,8 @@ const QuizContent = () => {
   const currentQ = questions[currentQuestion];
 
   return (
-    <div className="px-4 py-6 sm:px-0">
-      <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-xl p-8 max-w-4xl mx-auto">
+    <div className="p-4 sm:p-0">
+      <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 max-w-4xl mx-auto shadow-lg">
         {/* Progress Bar */}
         <div className="mb-6">
           <div className="flex justify-between text-sm text-gray-300 mb-2">
@@ -498,7 +589,7 @@ const QuizContent = () => {
             <span>{Math.round(((currentQuestion + 1) / questions.length) * 100)}%</span>
           </div>
           <div className="w-full bg-white bg-opacity-20 rounded-full h-2">
-            <div 
+            <div
               className="bg-gradient-to-r from-blue-500 to-green-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
             ></div>
@@ -548,11 +639,11 @@ const QuizContent = () => {
         </div>
 
         {/* Navigation Buttons */}
-        <div className="flex justify-between">
+        <div className="flex flex-wrap justify-between gap-4">
           <button
             onClick={goToPreviousQuestion}
             disabled={currentQuestion === 0}
-            className="flex items-center space-x-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-800 disabled:opacity-50 text-white rounded-lg transition-all duration-300 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-3 bg-gray-600 hover:bg-gray-700 disabled:bg-gray-800 disabled:opacity-50 text-white rounded-lg transition-all duration-300 disabled:cursor-not-allowed"
           >
             <ArrowLeft size={20} />
             <span>Previous</span>
@@ -561,7 +652,7 @@ const QuizContent = () => {
           <button
             onClick={goToNextQuestion}
             disabled={loading}
-            className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? (
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
