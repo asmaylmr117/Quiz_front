@@ -11,10 +11,17 @@ import {
   Trash2,
   UserX,
   Award,
-  XCircle,        
-  CheckCircle,   
+  Trophy,
+  Home,
+  Play,
+  RefreshCcw,
+  XCircle,
+  CheckCircle,
+  ArrowLeft,
+  ArrowRight,
   X
 } from 'lucide-react';
+
 import { Toaster, toast } from 'react-hot-toast';
 
 const API_BASE_URL = 'https://quiz-backend-rose.vercel.app';
