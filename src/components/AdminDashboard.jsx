@@ -372,14 +372,14 @@ const ProfileContent = ({ handleOpenModal }) => {
                 type="submit"
                 className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
               >
-                <CircleCheck size={20} /> Save Changes
+                <CheckCircle size={20} /> Save Changes
               </button>
               <button
                 type="button"
                 onClick={() => setEditMode(false)}
                 className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors duration-300"
               >
-                <CircleX size={20} /> Cancel
+                <XCircle size={20} /> Cancel
               </button>
             </div>
           </form>
@@ -767,12 +767,12 @@ const ResultsContent = ({ results, fetchResults, handleOpenModal }) => {
                 <div className="flex items-center gap-2">
                   {result.passed ? (
                     <div className="flex items-center gap-2 text-green-400">
-                      <CircleCheck size={20} />
+                      <CheckCircle size={20} />
                       <span className="font-semibold">PASSED</span>
                     </div>
                   ) : (
                     <div className="flex items-center gap-2 text-red-400">
-                      <CircleX size={20} />
+                      <XCircle size={20} />
                       <span className="font-semibold">FAILED</span>
                     </div>
                   )}
