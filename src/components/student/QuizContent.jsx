@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Play, RefreshCcw, Trophy, Award, Home, ArrowLeft, ArrowRight } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import Confetti from 'react-confetti';
+import { useWindowSize } from 'react-use';
 import { API_BASE_URL } from '../../config/api';
 import LoadingSpinner from '../common/LoadingSpinner';
 
@@ -115,16 +117,21 @@ const QuizContent = () => {
   if (quizCompleted) {
     const percentage = Math.round((score / questions.length) * 100);
     const passed = percentage >= 50;
+    const { width, height } = useWindowSize();
+    
     return (
       <div className="p-4 sm:p-0 relative">
         {showCelebration && (
-          <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
-            <div className="confetti-container">
-              {[...Array(50)].map((_, i) => (
-                <div key={i} className="confetti-piece animate-pulse"
-                  style={{ left: `${Math.random() * 100}%`, animationDelay: `${Math.random() * 3}s`, animationDuration: `${3 + Math.random() * 2}s` }}>✨</div>
-              ))}
-            </div>
+          <div className="fixed inset-0 pointer-events-none z-50">
+            <Confetti
+              width={width}
+              height={height}
+              recycle={false}
+              numberOfPieces={600}
+              gravity={0.15}
+              initialVelocityY={20}
+              colors={['#facc15', '#3b82f6', '#10b981', '#ef4444', '#a855f7']}
+            />
           </div>
         )}
         <div className="bg-white bg-opacity-10 backdrop-blur-lg rounded-2xl p-8 text-center max-w-2xl mx-auto shadow-lg">
@@ -157,14 +164,6 @@ const QuizContent = () => {
             </button>
           </div>
         </div>
-        <style jsx>{`
-          .confetti-container { position: relative; width: 100%; height: 100vh; }
-          .confetti-piece { position: absolute; font-size: 2rem; animation: confetti-fall 4s linear infinite; }
-          @keyframes confetti-fall {
-            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-          }
-        `}</style>
       </div>
     );
   }

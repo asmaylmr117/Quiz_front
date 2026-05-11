@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Plus, Edit, Trash2, HelpCircle } from 'lucide-react';
+import { Plus, Edit, Trash2, HelpCircle, X } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { API_BASE_URL } from '../../config/api';
 
@@ -65,29 +65,40 @@ const QuestionsContent = ({ questions, fetchQuestions, handleOpenModal }) => {
         </div>
 
         {showForm && (
-          <form onSubmit={editingQuestion ? handleUpdateQuestion : handleAddQuestion} className="mb-8 bg-white bg-opacity-5 rounded-2xl p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">{editingQuestion ? 'Edit Question' : 'Add New Question'}</h3>
-            <div className="space-y-4">
-              <textarea name="question" value={formData.question} onChange={handleInputChange} placeholder="Enter your question" className={`${inputClass} resize-none`} rows="3" required />
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <input type="text" name="a" value={formData.a} onChange={handleInputChange} placeholder="Answer A" className={inputClass} required />
-                <input type="text" name="b" value={formData.b} onChange={handleInputChange} placeholder="Answer B" className={inputClass} required />
-                <input type="text" name="c" value={formData.c} onChange={handleInputChange} placeholder="Answer C" className={inputClass} required />
-                <input type="text" name="d" value={formData.d} onChange={handleInputChange} placeholder="Answer D" className={inputClass} required />
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm p-4">
+            <div className="bg-gradient-to-br from-blue-900 to-purple-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-white border-opacity-20">
+              <div className="p-6 sm:p-8">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-2xl font-bold text-white">{editingQuestion ? 'Edit Question' : 'Add New Question'}</h3>
+                  <button type="button" onClick={resetForm} className="text-gray-400 hover:text-white transition-colors p-2 hover:bg-white hover:bg-opacity-10 rounded-full">
+                    <X size={24} />
+                  </button>
+                </div>
+                <form onSubmit={editingQuestion ? handleUpdateQuestion : handleAddQuestion}>
+                  <div className="space-y-4">
+                    <textarea name="question" value={formData.question} onChange={handleInputChange} placeholder="Enter your question" className={`${inputClass} resize-none`} rows="3" required />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <input type="text" name="a" value={formData.a} onChange={handleInputChange} placeholder="Answer A" className={inputClass} required />
+                      <input type="text" name="b" value={formData.b} onChange={handleInputChange} placeholder="Answer B" className={inputClass} required />
+                      <input type="text" name="c" value={formData.c} onChange={handleInputChange} placeholder="Answer C" className={inputClass} required />
+                      <input type="text" name="d" value={formData.d} onChange={handleInputChange} placeholder="Answer D" className={inputClass} required />
+                    </div>
+                    <select name="correct" value={formData.correct} onChange={handleInputChange} className={`${inputClass} appearance-none`} required>
+                      <option value="" className="bg-gray-800 text-white">Select correct answer</option>
+                      <option value="a" className="bg-gray-800 text-white">A</option>
+                      <option value="b" className="bg-gray-800 text-white">B</option>
+                      <option value="c" className="bg-gray-800 text-white">C</option>
+                      <option value="d" className="bg-gray-800 text-white">D</option>
+                    </select>
+                  </div>
+                  <div className="flex flex-wrap gap-4 mt-8 justify-end">
+                    <button type="button" onClick={resetForm} className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-6 py-2.5 rounded-lg transition-colors duration-300 font-medium">Cancel</button>
+                    <button type="submit" className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2.5 rounded-lg transition-colors duration-300 font-medium">{editingQuestion ? 'Update Question' : 'Add Question'}</button>
+                  </div>
+                </form>
               </div>
-              <select name="correct" value={formData.correct} onChange={handleInputChange} className={`${inputClass} appearance-none`} required>
-                <option value="" className="bg-gray-800 text-white">Select correct answer</option>
-                <option value="a" className="bg-gray-800 text-white">A</option>
-                <option value="b" className="bg-gray-800 text-white">B</option>
-                <option value="c" className="bg-gray-800 text-white">C</option>
-                <option value="d" className="bg-gray-800 text-white">D</option>
-              </select>
             </div>
-            <div className="flex flex-wrap gap-4 mt-6">
-              <button type="submit" className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors duration-300">{editingQuestion ? 'Update Question' : 'Add Question'}</button>
-              <button type="button" onClick={resetForm} className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors duration-300">Cancel</button>
-            </div>
-          </form>
+          </div>
         )}
 
         <div className="space-y-4">
