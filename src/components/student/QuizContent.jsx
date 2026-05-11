@@ -18,6 +18,7 @@ const QuizContent = () => {
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [showCelebration, setShowCelebration] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const { width, height } = useWindowSize();
 
   useEffect(() => { fetchQuestions(); }, []);
 
@@ -117,7 +118,6 @@ const QuizContent = () => {
   if (quizCompleted) {
     const percentage = Math.round((score / questions.length) * 100);
     const passed = percentage >= 50;
-    const { width, height } = useWindowSize();
     
     return (
       <div className="p-4 sm:p-0 relative">
