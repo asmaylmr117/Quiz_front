@@ -298,6 +298,7 @@ const QuizContent = () => {
   const [quizCompleted, setQuizCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   const [selectedAnswer, setSelectedAnswer] = useState('');
   const [showCelebration, setShowCelebration] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -324,6 +325,8 @@ const QuizContent = () => {
     } catch (error) {
       console.error('Error fetching questions:', error);
       toast.error('Network error while loading questions.');
+    } finally {
+      setInitialLoading(false);
     }
   };
   
@@ -436,6 +439,23 @@ const QuizContent = () => {
     setSelectedAnswer('');
     setShowCelebration(false);
   };
+
+  if (initialLoading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-32">
+        <div className="relative">
+          <div className="h-16 w-16 rounded-full border-4 border-white border-opacity-20 border-t-white animate-spin"></div>
+          <div className="absolute inset-0 h-16 w-16 rounded-full border-4 border-transparent border-b-green-400 animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}></div>
+        </div>
+        <p className="text-white text-lg mt-6 font-medium animate-pulse">Loading questions...</p>
+        <div className="flex gap-1.5 mt-3">
+          <div className="h-2 w-2 rounded-full bg-green-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
+          <div className="h-2 w-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '150ms' }}></div>
+          <div className="h-2 w-2 rounded-full bg-green-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+        </div>
+      </div>
+    );
+  }
 
   if (questions.length === 0 && !isRefreshing) {
     return (

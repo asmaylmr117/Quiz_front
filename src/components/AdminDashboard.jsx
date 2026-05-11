@@ -242,7 +242,22 @@ const AdminDashboard = () => {
         </div>
       </header>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {renderContent()}
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-32">
+            <div className="relative">
+              <div className="h-16 w-16 rounded-full border-4 border-white border-opacity-20 border-t-white animate-spin"></div>
+              <div className="absolute inset-0 h-16 w-16 rounded-full border-4 border-transparent border-b-blue-400 animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse' }}></div>
+            </div>
+            <p className="text-white text-lg mt-6 font-medium animate-pulse">Loading data...</p>
+            <div className="flex gap-1.5 mt-3">
+              <div className="h-2 w-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '0ms' }}></div>
+              <div className="h-2 w-2 rounded-full bg-purple-400 animate-bounce" style={{ animationDelay: '150ms' }}></div>
+              <div className="h-2 w-2 rounded-full bg-blue-400 animate-bounce" style={{ animationDelay: '300ms' }}></div>
+            </div>
+          </div>
+        ) : (
+          renderContent()
+        )}
       </main>
       <ConfirmationModal
         isOpen={isModalOpen}

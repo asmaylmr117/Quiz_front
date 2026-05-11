@@ -1,8 +1,8 @@
 import React from 'react';
 import { Toaster } from 'react-hot-toast';
 import AuthPage from './components/AuthPage';
-import AdminDashboard from './components/AdminDashboard';
-import StudentDashboard from './components/StudentDashboard';
+import AdminDashboard from './components/admin/AdminDashboard';
+import StudentDashboard from './components/student/StudentDashboard';
 import { AuthProvider, useAuth } from './context/AuthContext';
 
 const AppContent = () => {

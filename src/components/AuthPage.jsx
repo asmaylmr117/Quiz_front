@@ -2,8 +2,7 @@ import React, { useState } from 'react';
 import { User, GraduationCap, Lock, Mail, UserPlus, LogIn } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext';
-
-const API_BASE_URL = 'https://quiz-backend-rose.vercel.app';
+import { API_BASE_URL } from '../config/api';
 
 const AuthPage = () => {
   const { login } = useAuth();
