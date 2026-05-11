@@ -65,8 +65,8 @@ const QuestionsContent = ({ questions, fetchQuestions, handleOpenModal }) => {
         </div>
 
         {showForm && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm p-4">
-            <div className="bg-gradient-to-br from-blue-900 to-purple-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl border border-white border-opacity-20">
+          <div className="fixed inset-0 z-50 flex items-start justify-center bg-gray-900 bg-opacity-75 backdrop-blur-sm p-4 pt-20 overflow-y-auto">
+            <div className="bg-gradient-to-br from-blue-900 to-purple-900 rounded-2xl w-full max-w-2xl mt-4 sm:mt-8 mb-auto shadow-2xl border border-white border-opacity-20">
               <div className="p-6 sm:p-8">
                 <div className="flex justify-between items-center mb-6">
                   <h3 className="text-2xl font-bold text-white">{editingQuestion ? 'Edit Question' : 'Add New Question'}</h3>
